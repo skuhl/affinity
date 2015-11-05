@@ -20,7 +20,7 @@ In the context of detecting inappropriate collaboration between students on an a
 
 Affinity can highlight, in general, tokens that seem to be similar between the files, when *--html* output is enabled. However, the output does not allow you to easily see where a token in one file corresponds with a token in another similar file. Software packages such as <http://meldmerge.org/> or diff can help compare files in more detail.
 
-Affinity has not been optimized to handle large numbers of files or very large files. It may run slowly in some circumstances. For example, it might take 10 seconds on a typical computer to compare 100 submissions for a basic C programming assignment.
+Affinity has not been optimized to handle large numbers of files or very large files. It may run slowly in some circumstances. For example, it might take 5 seconds on a typical computer to compare 100 submissions for a basic C programming assignment.
 
 # OPTIONS
 
