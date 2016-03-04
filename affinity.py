@@ -229,9 +229,12 @@ def hashesForPattern(filename, pattern):
     # NOTE: We could potentially filter some hashes here so that we
     # end up with something more like a "fingerprint" for the document
     # instead a big set of hashes. For now, we hash() every shingle
-    # and get an iterator. (We could also convert this into a list(),
-    # but that is slower).
-    hashes = map(hash, shingles)
+    # and get an iterator.
+    #
+    # If we don't convert the map() into a list(), this program may
+    #  run a bit faster faster but the --html option properly
+    #  highlight output anymore.
+    hashes = list(map(hash, shingles))
 
     # Add hashes and shingles to caches. We really only need the
     # shingles returned by this method if HTML output was requested.
