@@ -273,7 +273,7 @@ def calculateScore(filename, sharedsetLen, hashessetLen, pattern, amp, weight):
 
 
 def compareFiles(file1, file2, mode=0):
-    """Returns tuple of scores. If mode==2, this function returns two scores: The first value approximates how much material from file1 is found in file2. The second value approximates how much material from file2 is found in file1. If mode > 0, only calculate how much material from file1 is found in file2."""
+    """Returns tuple of scores. If mode==0, this function returns two scores: The first value approximates how much material from file1 is found in file2. The second value approximates how much material from file2 is found in file1. If mode > 0, only calculate how much material from file1 is found in file2."""
 
     if args.debug:
         print("DEBUG: Comparing %s %s" % (file1, file2))
@@ -353,7 +353,7 @@ def humanSize(num):
     for x in ['bytes','KiB','MiB','GiB','TiB']:
         if num < 1024.0:
             if biggerThanBytes:
-                return "%6.2f %s" % (num, x)
+                return "%6.1f %s" % (num, x)
             else:
                 return "%d %s" % (round(num), x)
         num /= 1024.0
@@ -557,7 +557,7 @@ def compareFilesPrintResults(filelist, mode=0):
         indexhtml.write("<td><b>Score</b></td><td colspan='2'><b>Filename or directory</b></td>")
 
     for i in allResults:
-        print("%6.2f %-15s %-15s" % (i[0], i[1], i[2]))
+        print("%6.2f %-15s %-15s (%s %s)" % (i[0], i[1], i[2], humanFileSize(i[1]), humanFileSize(i[2])))
 
     if args.html:
         for i in reversed(allResults):
@@ -621,19 +621,26 @@ def getHTMLheader(title="Affinity"):
              "<meta charset='utf-8'>\n" \
              "<style>\n" \
              "body { font-family: Calabri, Helvetica, DejaVu Sans, Arial, sans-serif; background-color: #eee }\n" \
-             "code { font-family: Consolas, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif; }\n" \
+             "code { font-family: Consolas, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif; word-break: break-all; }\n" \
              "code b { color: #c0392b }\n" \
              "abbr { border-bottom: 1px dotted black; }\n" \
              "a:link    { color: #2980b9; font-weight: normal }\n" \
              "a:visited { color: #3498db; font-weight: normal }\n" \
              "a:hover   { color: #9b59b6; font-weight: normal }\n" \
              ".filenametitle { font-size: 120%; font-weight: bold; }\n" \
-             ".filesize  { font-size: 70%%; color: #7f8c8d }\n" \
+             ".filesize  { font-size: 70%; color: #7f8c8d }\n" \
              ".listing { border: solid 1px #7f8c8d; padding: 8px; background-color: white }\n" \
              ".space { color: #ccc; font-weight: normal }\n" \
              ".navigation  { margin-top: 15px; margin-bottom: 15px }\n" \
              ".summarytable  { border-collapse: collapse; background-color: white }\n" \
              ".summarytable td { border: 1px solid #7f8c8d; padding: .6em }\n" \
+             "</style>\n" \
+             "<style media='print'>" \
+             "body { background-color: white }\n" \
+             ".listing { font-size: 60%; line-height: 100% }\n" \
+             "code { color: #444 }\n" \
+             "code b { color: black }\n" \
+             ".space { color: #ddd; font-weight: normal }\n"\
              "</style>\n" \
              "<head><title>"+title+"</title></head>\n" \
              "<body>\n"
@@ -695,20 +702,24 @@ def writeHTML(filename, matchCount1, score1, otherFile, matchCount2, score2, mod
     with open(htmlfile, "w") as f:
         f.write(getHTMLheader(filename + " vs " + otherFile))
 
-        f.write("<div class='navigation'><a href='index.html' style='font-size: 120%; font-weight: bold;'>&#8672; Return to affinity summary</a></div>")
+        f.write("<div class='navigation'><a href='index.html' style='font-size: 120%; font-weight: bold;'>&#8672; Return to affinity summary</a></div>\n")
         if mode==0:
-            f.write("<p><b>Note:</b> The left and right files may be swapped from what you might expect because this single page is used for two different similarity scores.")
+            f.write("<ul>\n")
+            f.write("<li>Words highlighted in red are part of a series of words (contiguous or non-contiguous) which have also been found in the other file.\n")
+            f.write("<li><b>Note:</b> The left and right files may be swapped from what you might expect because this single page is used for two different similarity scores.\n")
+            f.write("</ul>\n")
 
         f.write("<table width='100%'><tr><td width='50%' style='vertical-align: top'>\n")
-        f.write("<span class='filenametitle'>%s (<abbr title='This score estimates how much material in %s was found in %s'>score: %0.2f</abbr>)</span>\n" % (filename, filename, otherFile, score1))
-        f.write("<span class='filesize'>"+humanFileSize(filename)+"</span>")
+        f.write("<span class='filenametitle'>%s</span>\n" % filename)
+        f.write("<span class='filesize'>"+humanFileSize(filename)+"</span><br>")
+        f.write("<span style='font-size: 90%%'>Approximately %0.2f%% of %s was found in %s</span>\n" % (score1, filename, otherFile))
         writeHTMLFormattedFile(f, filename, matchCount1)
         f.write("</td><td width='50%' style='vertical-align: top'>\n")
-        if mode == 0:
-            f.write("<span class='filenametitle'>%s (<abbr title='This score estimates how much material in %s was found in %s'>score: %0.2f</abbr>)</span>\n" % (otherFile, otherFile, filename, score2))
-        else:
-            f.write("<span class='filenametitle'>%s</span>\n" % (otherFile))
+        f.write("<span class='filenametitle'>%s</span>\n" % otherFile)
         f.write("<span class='filesize'>"+humanFileSize(otherFile)+"</span><br>\n")
+        if mode == 0:
+            f.write("<span style='font-size: 90%%'>Approximately %0.2f%% of %s was found in %s</span>\n" % (score2, filename, otherFile))
+
         writeHTMLFormattedFile(f, otherFile, matchCount2)
         f.write("</td></tr></table>\n")
 
