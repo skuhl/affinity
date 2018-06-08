@@ -1,12 +1,6 @@
 # affinity
 
+This project has moved to Gitlab: https://gitlab.com/kuhl/affinity
+
 Affinity measures the similarity between text files. It was originally designed to help course instructors look for similarities in source code that students turn in for programming assignments. However, it can provide similarity scores for any pair of text files. If no other options are provided, affinity will take the list of input files, enumerate every possible pair of files, and then calculates and prints the amount of similarity of those tiles. The output is sorted by the similarity scores.
-
-Due to the algorithm used by affinity, the scores provide a rough estimate of similarity that is not easy to concisely describe. The scores range from 0 to 100. As an example, if affinity printed "95.32 file1.txt file2.txt", it would mean that a large percentage of the material in file1.txt is similar to material somewhere in file2.txt. Affinity might also print "20.32 file2.txt file1.txt" which indicates that only a small percentage of material in file2.txt is similar to material somewhere in file1.txt. Future revisions of this software may result in different scores for the same set of files. Since the exact meaning of any particular score is not obvious, it is best to focus on the relative differences between multiple scores since high scores almost certainly mean more similarity.
-
-In the context of detecting inappropriate collaboration between students on an assignment, it is important to note that affinity is not intended to be a substitute for manually looking at files to determine if they are similar or not. Instead, affinity aims to provide some guidance for what pairs of files might need additional scrutiny. Instructors should look for outliers in the scores instead of looking for scores above a certain threshold. If python3-scipy is installed, affinity will apply a statistical test (one-sided Grubbs' test for outliers) which can help determine if the highest score(s) might be outliers or not. Students may have a difficult time using affinity to find ways to collaborate while also avoiding detection since it is difficult to determine which scores might be outliers (since they don't have access to all of their peers' solutions).
-
-Affinity can highlight, in general, tokens that seem to be similar between the files, when *--html* output is enabled. However, the output does not allow you to easily see where a token in one file corresponds with a token in another similar file. Software packages such as <http://meldmerge.org/> or diff can help compare files in more detail.
-
-Affinity has not been optimized to handle large numbers of files or very large files. It may run slowly in some circumstances. For example, it might take 5 seconds on a typical computer to compare 100 submissions for a basic C programming assignment.
 
